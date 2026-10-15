@@ -45,7 +45,8 @@ scripts/
   make_figures.py      re-renders Figures 1-6 from the result tables in data/
   colab_io.py          backs up and restores data/ (with checkpoints) on Colab
   check_references.py  resolves every cited DOI against Crossref / DataCite
-notebooks/             the full analysis pipeline (see notebooks/README.md)
+notebooks/
+  ssw_global_pipeline.ipynb  full pipeline: GEE panel -> POWER pull -> Stages A-D (see notebooks/README.md)
 data/                  pipeline outputs, not version-controlled (see data/README.md)
 ```
 
@@ -53,8 +54,10 @@ data/                  pipeline outputs, not version-controlled (see data/README
 
 ```bash
 pip install -r requirements.txt
-# 1. run the pipeline notebook (notebooks/) -> writes data/*.parquet
-# 2. render the figures
+# 1. GEE covariate export -> data/gpc_0.csv ... gpc_23.csv
+# 2. run notebooks/ssw_global_pipeline.ipynb from the repo root -> data/*.parquet
+#    (Cell 9 renders the figures; or run step 3 on its own)
+# 3. render the figures
 python scripts/make_figures.py --data data --out figures
 ```
 
