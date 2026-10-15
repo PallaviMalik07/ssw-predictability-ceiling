@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the paper and this software."
+title: "Predictability ceilings for lag-based emulation of soil surface wetness"
+type: software
+license: MIT
+authors:
+  - family-names: Malik
+    given-names: Pallavi
+    affiliation: "Department of Mathematics, University of Engineering & Management, Jaipur, India"
+    orcid: "https://orcid.org/0000-0003-0327-3648"
+  - family-names: Chauhan
+    given-names: Shivam
+    affiliation: "Department of Civil Engineering, University of Engineering & Management, Jaipur, India"
+repository-code: "https://github.com/PallaviMalik07/ssw-predictability-ceiling"
+keywords: [soil moisture, predictability ceiling, machine learning, benchmarking, NASA POWER, MERRA-2, data leakage]
+date-released: 2026-10-15
