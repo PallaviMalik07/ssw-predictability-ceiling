@@ -90,7 +90,7 @@ All inputs are public and need no special permission.
 
 ## Citation
 
-See `CITATION.cff`. A DOI for the archived release will be added here.
+See `CITATION.cff`. Archived release: [10.5281/zenodo.23436663](https://doi.org/10.5281/zenodo.23436663)
 
 ## License
 
