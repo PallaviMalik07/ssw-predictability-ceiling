@@ -1,6 +1,6 @@
 # Manuscript number audit
 
-157 numeric claims recomputed from the archived outputs: **141 match, 16 do not.**
+160 numeric claims recomputed from the archived outputs: **160 match, 0 do not.**
 
 | Section | Claim | Paper | Recomputed | | Note |
 |---|---|---|---|---|---|
@@ -17,15 +17,16 @@
 | 2.2 | closest Punjab pair (km) | 59.6 | 59.6 | OK |  |
 | 3.1 | non-empty strata | 29.0 | 29 | OK |  |
 | 3.1 | northern-hemisphere cells | 134.0 | 134 | OK |  |
-| 3.1 | southern-hemisphere cells | 116.0 | 115 | **MISMATCH** |  |
+| 3.1 | southern-hemisphere cells | 115.0 | 115 | OK |  |
 | 3.1 | corr(AI, irrig_index) | -0.073 | -0.073 | OK |  |
 | 3.1 | min separation, non-replication cells (km) | 55.1 | 55.1 | OK |  |
 | 2.2 | every extracted cell returns a distinct series (250 incl. dropped cell) | 250.0 | 250 | OK |  |
 | 3.1 | mean GWETTOP hyperarid | 0.186 | 0.186 | OK |  |
-| 3.1 | mean GWETTOP humid | 0.687 | 0.681 | **MISMATCH** | 0.687 / 0.799 reproduce only on 250 cells, i.e. before the constant cell was dropped |
-| 3.1 / 2.7 | corr(AI, mean GWETTOP) | 0.799 | 0.802 | **MISMATCH** |  |
-| 1.2 | corr(AI, mean GWETTOP) as stated in 1.2 | 0.709 | 0.802 | **MISMATCH** | 0.709 is the India-60 value |
-| 2.2 | strata with fewer than 4 cells ('minimum of four per stratum') | 0.0 | 1 | **MISMATCH** | hyperarid|med|S has only 1 candidate cell in the whole export; code takes min(4, available) |
+| 3.1 | mean GWETTOP humid | 0.681 | 0.681 | OK |  |
+| 2.7 | mean GWETTOP rises monotonically across the five aridity classes | 1.0 | 1 | OK |  |
+| 1.2 / 2.7 / 3.1 | corr(AI, mean GWETTOP) | 0.802 | 0.802 | OK |  |
+| 2.2 | strata with fewer than 4 cells (stated: one, with a single candidate) | 1.0 | 1 | OK |  |
+| 2.2 | cells in that stratum | 1.0 | 1 | OK |  |
 | 3.1 | seas_share min | 0.057 | 0.057 | OK |  |
 | 3.1 | seas_share max | 0.944 | 0.944 | OK |  |
 | 3.1 | seas_share mean | 0.532 | 0.532 | OK |  |
@@ -46,7 +47,8 @@
 | 3.2 | mean ceiling dry-subhumid | 0.775 | 0.775 | OK |  |
 | 3.2 | mean ceiling humid | 0.811 | 0.811 | OK |  |
 | 3.2 / Abs | corr(ceil_lin_des, acf1_des) | 0.984 | 0.984 | OK |  |
-| 3.2 | cells where MI bound < linear bound ('where they diverge, MI is the higher') | 0.0 | 128 | **MISMATCH** | MI uses 3 lags vs 12 for the linear bound, so it can sit below it |
+| 3.2 | cells where MI bound > linear bound | 121.0 | 121 | OK |  |
+| 3.2 | cells where MI bound < linear bound | 128.0 | 128 | OK |  |
 | 3.2 / Abs | corr(ceil_mi_raw, ceil_lin_raw) | 0.937 | 0.937 | OK |  |
 | Table 1 | Firozpur linear ceiling | 0.627 | 0.627 | OK |  |
 | Table 1 | Firozpur deseasonalised ceiling | 0.474 | 0.474 | OK |  |
@@ -87,24 +89,25 @@
 | Table 2 | SeasonalNaive mean NSE | 0.125 | 0.125 | OK |  |
 | Table 2 | SeasonalNaive SD | 0.596 | 0.596 | OK |  |
 | Table 2 | SeasonalNaive cells won | 0.0 | 0 | OK |  |
-| 3.3 | tuned tree tier mean (RF, XGBoost, LightGBM) | 0.637 | 0.637 | OK |  |
-| 3.3 | tuning-free tier mean (ESN) | 0.634 | 0.634 | OK |  |
+| 3.3 | tree ensemble mean (RF, XGBoost, LightGBM) | 0.637 | 0.637 | OK |  |
+| 3.3 | reservoir tier mean (ESN) | 0.634 | 0.634 | OK |  |
+| 3.3 / 4.2 / Abs / 5 | tree ensembles vs ESN differ by less than 0.003 NSE | 1.0 | 1 | OK |  |
 | 3.3 / Fig 4 | median seed s.d. | 0.0082 | 0.0082 | OK |  |
 | 3.3 / Fig 4 | median between-model s.d. | 0.0954 | 0.0954 | OK |  |
 | 3.3 / Fig 4 | between / seed ratio | 11.6 | 11.6 | OK |  |
 | 3.3 / Abs | corr(best NSE, ceiling) | 0.936 | 0.936 | OK |  |
 | 3.3 / 4.1 | mean gap ceiling - best | 0.058 | 0.058 | OK |  |
-| 3.3 | AR12 win rate humid | 0.868 | 0.849 | **MISMATCH** | paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models |
-| 3.3 | AR12 win rate hyperarid | 0.722 | 0.722 | OK | paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models |
-| 3.3 | AR12 win rate semiarid | 0.63 | 0.630 | OK | paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models |
-| 3.3 | AR12 win rate dry-subhumid | 0.593 | 0.574 | **MISMATCH** | paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models |
-| 3.3 | AR12 win rate arid | 0.558 | 0.462 | **MISMATCH** | paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models |
-| 3.3 | RF wins arid | 17.0 | 17 | OK | paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models |
-| 3.3 | RF wins semiarid | 15.0 | 13 | **MISMATCH** | paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models |
-| 3.3 | RF wins dry-subhumid | 12.0 | 12 | OK | paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models |
-| 3.3 | RF wins humid | 3.0 | 3 | OK | paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models |
-| 3.3 | AR12 win rate where MI > linear (%) | 59.5 | 56.2 | **MISMATCH** | paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models |
-| 3.3 | AR12 win rate where MI <= linear (%) | 74.2 | 71.9 | **MISMATCH** | paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models |
+| 3.3 | AR12 win rate humid | 0.849 | 0.849 | OK |  |
+| 3.3 | AR12 win rate hyperarid | 0.722 | 0.722 | OK |  |
+| 3.3 | AR12 win rate semiarid | 0.63 | 0.630 | OK |  |
+| 3.3 | AR12 win rate dry-subhumid | 0.574 | 0.574 | OK |  |
+| 3.3 | AR12 win rate arid | 0.462 | 0.462 | OK |  |
+| 3.3 | RF wins arid | 17.0 | 17 | OK |  |
+| 3.3 | RF wins semiarid | 13.0 | 13 | OK |  |
+| 3.3 | RF wins dry-subhumid | 12.0 | 12 | OK |  |
+| 3.3 | RF wins humid | 3.0 | 3 | OK |  |
+| 3.3 | AR12 win rate where MI > linear (%) | 56.2 | 56.2 | OK |  |
+| 3.3 | AR12 win rate where MI <= linear (%) | 71.9 | 71.9 | OK |  |
 | 3.4 / Table 3 | lag-only, lags 1-3 (best per cell) | 0.693 | 0.693 | OK |  |
 | 3.4 / Table 3 | lag+drivers, lags 1-3 | 0.74 | 0.740 | OK |  |
 | 3.4 / Table 3 | driver gain, lags 1-3 | 0.047 | 0.047 | OK |  |
@@ -121,11 +124,9 @@
 | Table 3 | corr(acf1_des, gain), lags 0-2 | -0.302 | -0.302 | OK |  |
 | Table 3 | p of that corr, lags 0-2 | 1e-06 | 1.2e-06 | OK |  |
 | 3.4 / 4.3 | inflation factor gain0 / gain1 | 5.0 | 5.0 | OK |  |
-| 3.4 | 'lagged meteorology alone' 0.664 [all-model mean basis] | 0.664 | 0.664 | OK |  |
-| 3.4 | 'lagged wetness alone' 0.643 [all-model mean basis] | 0.643 | 0.643 | OK |  |
-| 3.4 | same comparison on Table 3 basis: drivers_only lags 1-3 | 0.664 | 0.695 | **MISMATCH** | paper mixes bases: 0.664/0.643 are all-model means, Table 3's 0.693 is best-per-cell |
-| 3.4 / 4.3 | 'drivers alone' lags 0-2 0.859 [all-model mean basis] | 0.859 | 0.859 | OK |  |
-| 3.4 / 4.3 | same on Table 3 basis: drivers_only lags 0-2 | 0.859 | 0.887 | **MISMATCH** | 0.859 is an all-model mean; on the Table 3 basis it is 0.887 |
+| 3.4 | lagged meteorology alone, lags 1-3 (best per cell) | 0.695 | 0.695 | OK |  |
+| 3.4 | lagged wetness alone, lags 1-3 (best per cell) | 0.693 | 0.693 | OK |  |
+| 3.4 / 4.3 | drivers alone, lags 0-2 (best per cell) | 0.887 | 0.887 | OK |  |
 | 3.4 | driver gain hyperarid | 0.067 | 0.067 | OK |  |
 | 3.4 | driver gain arid | 0.053 | 0.053 | OK |  |
 | 3.4 | driver gain semiarid | 0.045 | 0.045 | OK |  |
@@ -150,11 +151,13 @@
 | 3.5 | p of that corr | 1e-44 | 1.2e-44 | OK |  |
 | 3.5 | mean seas_share over-cells | 0.768 | 0.768 | OK |  |
 | 3.5 | mean seas_share other cells | 0.475 | 0.475 | OK |  |
-| 3.5 | over-cells won by nonlinear models | 36.0 | 34 | **MISMATCH** | 36 = all non-AR12 winners, which includes 2 Climatology wins; nonlinear models are 34 |
+| 3.5 / 4.5 | over-cells won by nonlinear models | 34.0 | 34 | OK |  |
+| 3.5 | over-cells won by OLS (AR12) | 13.0 | 13 | OK |  |
+| 3.5 | over-cells won by climatology | 2.0 | 2 | OK |  |
 | 3.5 | non-exceeding cells | 200.0 | 200 | OK |  |
 | 3.5 | AR12 wins among non-exceeding | 147.0 | 147 | OK |  |
-| 3.5 | cells where climatology is the best model AND exceeds the ceiling | 2.0 | 2 | OK |  |
-| 3.5 | cells where climatology exceeds the ceiling (any rank) | 2.0 | 5 | **MISMATCH** | 'Climatology exceeds the ceiling in two cells' is true only for cells it wins |
+| 3.5 | cells where climatology exceeds the ceiling | 5.0 | 5 | OK |  |
+| 3.5 | of which climatology wins outright | 2.0 | 2 | OK |  |
 | 4.6 | cells > 0.20 below ceiling | 12.0 | 12 | OK |  |
 | 4.6 | worst shortfall | 0.43 | 0.430 | OK |  |
 | 4.6 | mean seas_share of shortfall cells | 0.157 | 0.157 | OK |  |

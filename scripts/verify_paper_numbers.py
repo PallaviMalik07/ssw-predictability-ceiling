@@ -1,4 +1,4 @@
-"""Recompute every numeric claim in the manuscript from the archived pipeline outputs.
+"""Recompute every numeric claim in the manuscript (revised version, Oct 2026) from the archived pipeline outputs.
 
 Usage:  python scripts/verify_paper_numbers.py [--data data] [--report VERIFICATION_numbers.md]
 
@@ -82,7 +82,7 @@ def main(D: Path, report: Path):
     # ---------------- 3.1 panel and series structure ----------------
     claim("3.1", "non-empty strata", 29, pan.stratum.nunique(), kind="int")
     claim("3.1", "northern-hemisphere cells", 134, (pan.hemi == "N").sum(), kind="int")
-    claim("3.1", "southern-hemisphere cells", 116, (pan.hemi == "S").sum(), kind="int")
+    claim("3.1", "southern-hemisphere cells", 115, (pan.hemi == "S").sum(), kind="int")
     claim("3.1", "corr(AI, irrig_index)", -0.073, stats.pearsonr(pan.AI, pan.irrig_index)[0], 3)
     nonrep = pan[~pan.replication]
     Pm = xyz(nonrep.lat.to_numpy(), nonrep.lon.to_numpy())
@@ -96,14 +96,14 @@ def main(D: Path, report: Path):
     j = pan.set_index("cell_id")[["AI", "aridity_class"]].join(gw, how="inner")
     gm = j.groupby("aridity_class", observed=True).gw.mean()
     claim("3.1", "mean GWETTOP hyperarid", 0.186, gm["hyperarid"], 3)
-    claim("3.1", "mean GWETTOP humid", 0.687, gm["humid"], 3,
-          note="0.687 / 0.799 reproduce only on 250 cells, i.e. before the constant cell was dropped")
+    claim("3.1", "mean GWETTOP humid", 0.681, gm["humid"], 3)
+    claim("2.7", "mean GWETTOP rises monotonically across the five aridity classes", 1,
+          int(all(gm[a] < gm[b] for a, b in zip(ARID, ARID[1:]))), kind="int")
     rj = stats.pearsonr(j.AI, j.gw)[0]
-    claim("3.1 / 2.7", "corr(AI, mean GWETTOP)", 0.799, rj, 3)
-    claim("1.2", "corr(AI, mean GWETTOP) as stated in 1.2", 0.709, rj, 3, note="0.709 is the India-60 value")
+    claim("1.2 / 2.7 / 3.1", "corr(AI, mean GWETTOP)", 0.802, rj, 3)
     vc = pan.stratum.value_counts()
-    claim("2.2", "strata with fewer than 4 cells ('minimum of four per stratum')", 0, (vc < 4).sum(), kind="int",
-          note="hyperarid|med|S has only 1 candidate cell in the whole export; code takes min(4, available)")
+    claim("2.2", "strata with fewer than 4 cells (stated: one, with a single candidate)", 1, (vc < 4).sum(), kind="int")
+    claim("2.2", "cells in that stratum", 1, vc.min(), kind="int")
     claim("3.1", "seas_share min", 0.057, diag.seas_share.min(), 3)
     claim("3.1", "seas_share max", 0.944, diag.seas_share.max(), 3)
     claim("3.1", "seas_share mean", 0.532, diag.seas_share.mean(), 3)
@@ -124,9 +124,8 @@ def main(D: Path, report: Path):
     for k, v in zip(ARID, [0.637, 0.742, 0.754, 0.775, 0.811]):
         claim("3.2", f"mean ceiling {k}", v, cb[k], 3)
     claim("3.2 / Abs", "corr(ceil_lin_des, acf1_des)", 0.984, ce[["ceil_lin_des", "acf1_des"]].corr().iloc[0, 1], 3)
-    claim("3.2", "cells where MI bound < linear bound ('where they diverge, MI is the higher')", 0,
-          (ce.ceil_mi_raw < ce.ceil_lin_raw).sum(), kind="int",
-          note="MI uses 3 lags vs 12 for the linear bound, so it can sit below it")
+    claim("3.2", "cells where MI bound > linear bound", 121, (ce.ceil_mi_raw > ce.ceil_lin_raw).sum(), kind="int")
+    claim("3.2", "cells where MI bound < linear bound", 128, (ce.ceil_mi_raw < ce.ceil_lin_raw).sum(), kind="int")
     claim("3.2 / Abs", "corr(ceil_mi_raw, ceil_lin_raw)", 0.937, ce[["ceil_mi_raw", "ceil_lin_raw"]].corr().iloc[0, 1], 3)
     cp = ce[ce.replication].set_index("name")
     for nm, lin, des, ss in [("Firozpur", .627, .474, .443), ("Moga", .664, .510, .476), ("Hoshiarpur", .734, .571, .531)]:
@@ -146,9 +145,11 @@ def main(D: Path, report: Path):
         claim("Table 2", f"{m} mean NSE", mu, tab.at[m, "mean"], 3)
         claim("Table 2", f"{m} SD", sd, tab.at[m, "std"], 3)
         claim("Table 2", f"{m} cells won", w, wins.get(m, 0), kind="int")
-    claim("3.3", "tuned tree tier mean (RF, XGBoost, LightGBM)", 0.637,
+    claim("3.3", "tree ensemble mean (RF, XGBoost, LightGBM)", 0.637,
           res[res.model.isin(["RF", "XGBoost", "LightGBM"])].nse.mean(), 3)
-    claim("3.3", "tuning-free tier mean (ESN)", 0.634, res[res.model == "ESN"].nse.mean(), 3)
+    claim("3.3", "reservoir tier mean (ESN)", 0.634, res[res.model == "ESN"].nse.mean(), 3)
+    gap = res[res.model.isin(["RF", "XGBoost", "LightGBM"])].nse.mean() - res[res.model == "ESN"].nse.mean()
+    claim("3.3 / 4.2 / Abs / 5", "tree ensembles vs ESN differ by less than 0.003 NSE", 1, int(abs(gap) < 0.003), kind="int")
     ml = res[~res.model.isin(FLOORS)]
     seed = ml.groupby(["cell_id", "fold", "model"]).nse.std().dropna().median()
     betw = ml.groupby(["cell_id", "fold", "model"]).nse.mean().groupby(level=[0, 1]).std().dropna().median()
@@ -159,16 +160,16 @@ def main(D: Path, report: Path):
     claim("3.3 / Abs", "corr(best NSE, ceiling)", 0.936, t[["nse", "ceil_lin_raw"]].corr().iloc[0, 1], 3)
     claim("3.3 / 4.1", "mean gap ceiling - best", 0.058, (t.ceil_lin_raw - t.nse).mean(), 3)
     t["ar12"] = t.model == "AR12"
-    NOTE33 = "paper value reproduces on stageC_legacy_results (9 models, before ESN; AR12 wins 167); Table 2 uses 10 models"
+    NOTE33 = ""
     wr = t.groupby("aridity_class", observed=True).ar12.mean()
-    for k, v in [("humid", .868), ("hyperarid", .722), ("semiarid", .630), ("dry-subhumid", .593), ("arid", .558)]:
+    for k, v in [("humid", .849), ("hyperarid", .722), ("semiarid", .630), ("dry-subhumid", .574), ("arid", .462)]:
         claim("3.3", f"AR12 win rate {k}", v, wr[k], 3, note=NOTE33)
     rf = t[t.model == "RF"].aridity_class.value_counts()
-    for k, v in [("arid", 17), ("semiarid", 15), ("dry-subhumid", 12), ("humid", 3)]:
+    for k, v in [("arid", 17), ("semiarid", 13), ("dry-subhumid", 12), ("humid", 3)]:
         claim("3.3", f"RF wins {k}", v, rf.get(k, 0), kind="int", note=NOTE33)
     gt = t.ceil_mi_raw > t.ceil_lin_raw
-    claim("3.3", "AR12 win rate where MI > linear (%)", 59.5, 100 * t[gt].ar12.mean(), 1, note=NOTE33)
-    claim("3.3", "AR12 win rate where MI <= linear (%)", 74.2, 100 * t[~gt].ar12.mean(), 1, note=NOTE33)
+    claim("3.3", "AR12 win rate where MI > linear (%)", 56.2, 100 * t[gt].ar12.mean(), 1, note=NOTE33)
+    claim("3.3", "AR12 win rate where MI <= linear (%)", 71.9, 100 * t[~gt].ar12.mean(), 1, note=NOTE33)
 
     # ---------------- 3.4 / Table 3 / Table 4 ----------------
     claim("3.4 / Table 3", "lag-only, lags 1-3 (best per cell)", 0.693, s1.lag_only.mean(), 3)
@@ -191,13 +192,9 @@ def main(D: Path, report: Path):
     claim("Table 3", "p of that corr, lags 0-2", 1e-6, p0, 0, kind="p")
     claim("3.4 / 4.3", "inflation factor gain0 / gain1", 5.0, s0.driver_gain.mean() / s1.driver_gain.mean(), 1)
     m1 = d1.groupby("inputs").nse.mean(); m0 = d0.groupby("inputs").nse.mean()
-    claim("3.4", "'lagged meteorology alone' 0.664 [all-model mean basis]", 0.664, m1["drivers_only"], 3)
-    claim("3.4", "'lagged wetness alone' 0.643 [all-model mean basis]", 0.643, m1["lag_only"], 3)
-    claim("3.4", "same comparison on Table 3 basis: drivers_only lags 1-3", 0.664, s1.drivers_only.mean(), 3,
-          note="paper mixes bases: 0.664/0.643 are all-model means, Table 3's 0.693 is best-per-cell")
-    claim("3.4 / 4.3", "'drivers alone' lags 0-2 0.859 [all-model mean basis]", 0.859, m0["drivers_only"], 3)
-    claim("3.4 / 4.3", "same on Table 3 basis: drivers_only lags 0-2", 0.859, s0.drivers_only.mean(), 3,
-          note="0.859 is an all-model mean; on the Table 3 basis it is 0.887")
+    claim("3.4", "lagged meteorology alone, lags 1-3 (best per cell)", 0.695, s1.drivers_only.mean(), 3)
+    claim("3.4", "lagged wetness alone, lags 1-3 (best per cell)", 0.693, s1.lag_only.mean(), 3)
+    claim("3.4 / 4.3", "drivers alone, lags 0-2 (best per cell)", 0.887, s0.drivers_only.mean(), 3)
     ga = s1.groupby("aridity_class", observed=True).driver_gain.mean()
     for k, v in zip(ARID, [.067, .053, .045, .041, .038]):
         claim("3.4", f"driver gain {k}", v, ga[k], 3)
@@ -220,15 +217,14 @@ def main(D: Path, report: Path):
     claim("3.5", "p of that corr", 1e-44, pe_, 0, kind="p")
     claim("3.5", "mean seas_share over-cells", 0.768, t.loc[over, "seas_share"].mean(), 3)
     claim("3.5", "mean seas_share other cells", 0.475, t.loc[~over, "seas_share"].mean(), 3)
-    claim("3.5", "over-cells won by nonlinear models", 36, (~t.loc[over, "model"].isin(FLOORS)).sum(), kind="int",
-          note="36 = all non-AR12 winners, which includes 2 Climatology wins; nonlinear models are 34")
+    claim("3.5 / 4.5", "over-cells won by nonlinear models", 34, (~t.loc[over, "model"].isin(FLOORS)).sum(), kind="int")
+    claim("3.5", "over-cells won by OLS (AR12)", 13, (t.loc[over, "model"] == "AR12").sum(), kind="int")
+    claim("3.5", "over-cells won by climatology", 2, (t.loc[over, "model"] == "Climatology").sum(), kind="int")
     claim("3.5", "non-exceeding cells", 200, (~over).sum(), kind="int")
     claim("3.5", "AR12 wins among non-exceeding", 147, (t.loc[~over, "model"] == "AR12").sum(), kind="int")
     clim = res[res.model == "Climatology"].groupby("cell_id").nse.mean().rename("clim").reset_index().merge(ce, on="cell_id")
-    claim("3.5", "cells where climatology is the best model AND exceeds the ceiling", 2,
-          ((t.model == "Climatology") & over).sum(), kind="int")
-    claim("3.5", "cells where climatology exceeds the ceiling (any rank)", 2, (clim.clim > clim.ceil_lin_raw).sum(),
-          kind="int", note="'Climatology exceeds the ceiling in two cells' is true only for cells it wins")
+    claim("3.5", "cells where climatology exceeds the ceiling", 5, (clim.clim > clim.ceil_lin_raw).sum(), kind="int")
+    claim("3.5", "of which climatology wins outright", 2, ((t.model == "Climatology") & over).sum(), kind="int")
     sh = t.exceed < -0.20
     claim("4.6", "cells > 0.20 below ceiling", 12, sh.sum(), kind="int")
     claim("4.6", "worst shortfall", 0.430, -t.exceed.min(), 3)
