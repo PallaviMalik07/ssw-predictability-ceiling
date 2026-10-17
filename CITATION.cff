@@ -3,6 +3,8 @@ message: "If you use this code, please cite the paper and this software."
 title: "Predictability ceilings for lag-based emulation of soil surface wetness"
 type: software
 license: MIT
+version: v1.0.0
+doi: 10.5281/zenodo.23436663
 authors:
   - family-names: Malik
     given-names: Pallavi
