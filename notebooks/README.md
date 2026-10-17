@@ -18,7 +18,12 @@
 | 9 | figures, via `scripts/make_figures.py` | `figures/` |
 | 10 | headline numbers | — |
 
-Cells marked `PATCH` in the code (Cell 3 degenerate-cell drop, Cell 4 KSG jitter and 5-nat cap) carry out the procedures described in paper Sections 2.2 and 2.4.
+Cells marked `PATCH` in the code (Cell 3 degenerate-cell drop, Cell 4 KSG jitter and 5-nat cap) carry out the procedures described in paper Sections 2.2 and 2.4. The original code for these two steps was not kept, so they were rewritten from the paper's description and checked against the archived results:
+
+- **Panel (Cells 1 and 3):** the 249 published cells are reproduced exactly from `data/gpc_*.csv`.
+- **Linear ceiling (Cell 4):** reproduced exactly; spot-checked at 6 cells to 4 decimal places.
+- **KSG mutual information (Cell 4):** reproduced to within 0.001 in humid cells and within 0.02 in hyper-arid cells. The jitter's random draws differ from the original run, and in hyper-arid cells most values are tied at the 0.04 floor, so those cells are the most sensitive to it.
+- **Everything downstream (Stage C, Stage D, the exceedance diagnostic):** every number in the paper reproduces exactly from the archived result tables.
 
 **Two averaging bases in Stage D.** Cell 10 reports `lag_only` and `lag+drivers` two ways:
 

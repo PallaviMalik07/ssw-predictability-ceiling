@@ -54,16 +54,16 @@ data/                  pipeline outputs, not version-controlled (see data/README
 
 ```bash
 pip install -r requirements.txt
-# 1. GEE covariate export -> data/gpc_0.csv ... gpc_23.csv
+# 1. data/gpc_0.csv ... gpc_23.csv (the Earth Engine export) are already in the repo
 # 2. run notebooks/ssw_global_pipeline.ipynb from the repo root -> data/*.parquet
 #    (Cell 9 renders the figures; or run step 3 on its own)
 # 3. render the figures
 python scripts/make_figures.py --data data --out figures
 ```
 
-You need a Google Earth Engine account for the covariate export. You need network access to `power.larc.nasa.gov` for the POWER pull. No GPU is needed and 8 GB RAM is enough. Every heavy stage saves a checkpoint per grid cell and picks up where it left off after a restart.
+No Earth Engine account is needed: the covariate export is in `data/`. You need network access to `power.larc.nasa.gov` for the POWER pull. No GPU is needed and 8 GB RAM is enough. Every heavy stage saves a checkpoint per grid cell and picks up where it left off after a restart.
 
-The pipeline was run twice from raw inputs on separate compute environments and gave the same reported numbers both times.
+The pipeline was run twice from raw inputs on separate compute environments and gave the same reported numbers both times. See `notebooks/README.md` for which steps reproduce exactly and which reproduce to within a stated tolerance.
 
 ## Data sources
 

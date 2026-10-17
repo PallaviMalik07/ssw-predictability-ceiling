@@ -5,3 +5,4 @@ __pycache__/
 *.zip
 data/*
 !data/README.md
+!data/gpc_*.csv
