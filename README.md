@@ -45,6 +45,10 @@ scripts/
   make_figures.py      re-renders Figures 1-6 from the result tables in data/
   colab_io.py          backs up and restores data/ (with checkpoints) on Colab
   check_references.py  resolves every cited DOI against Crossref / DataCite
+  verify_paper_numbers.py  recomputes every numeric claim in the paper from data/
+  rerun_check.py       re-executes the notebook cells and retrains models on sample cells
+tests/                 pytest suite (estimators, figures, archived-result regression)
+VERIFICATION.md        code-vs-manuscript audit: numbers, methods, re-execution
 notebooks/
   ssw_global_pipeline.ipynb  full pipeline: GEE panel -> POWER pull -> Stages A-D (see notebooks/README.md)
   archive/                   the Colab notebook exactly as run for the paper, with outputs
@@ -65,6 +69,16 @@ python scripts/make_figures.py --data data --out figures
 No Earth Engine account is needed: the covariate export is in `data/`. You need network access to `power.larc.nasa.gov` for the POWER pull. No GPU is needed and 8 GB RAM is enough. Every heavy stage saves a checkpoint per grid cell and picks up where it left off after a restart.
 
 The pipeline was run twice from raw inputs on separate compute environments and gave the same reported numbers both times. `notebooks/README.md` records which steps were re-verified against the archived result tables, and how closely each matched.
+
+## Testing and verification
+
+```bash
+pytest -q tests                                   # 16 tests; 3 need the archived data/ outputs
+python scripts/verify_paper_numbers.py            # every number in the paper vs data/
+python scripts/rerun_check.py --archive data      # re-run Stage A-D cells on sample cells
+```
+
+Results are in `VERIFICATION.md`.
 
 ## Data sources
 

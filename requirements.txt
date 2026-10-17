@@ -2,9 +2,10 @@ numpy>=1.24
 pandas>=2.0
 pyarrow>=12
 scipy>=1.10
-scikit-learn>=1.3
+scikit-learn==1.6.1   # pinned: newer versions change CART/AdaBoost fits (see VERIFICATION.md)
 statsmodels>=0.14
 xgboost>=2.0
 lightgbm>=4.0
 matplotlib>=3.7
 requests>=2.31
+pytest>=7
