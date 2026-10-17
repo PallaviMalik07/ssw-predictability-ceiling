@@ -4,7 +4,7 @@
 
 These are the 24 chunks exported from Google Earth Engine: 6 longitude sectors × 4 latitude bands, 60°S–80°N, reduced at 10 km. There are 50,860 rows in total, and `gpc_0.csv` holds only a header.
 
-The Earth Engine script that produced them was not kept, so the exported chunks are archived in its place. Notebook Cell 1 starts from these files and rebuilds the published panel exactly: it selects 250 cells, the 249 analysed cells plus `-07p500_-034p688`, which Cell 3 drops for having constant GWETTOP.
+The Earth Engine script that produced them was not kept, so the exported chunks are archived in its place. Notebook Cell 1 starts from these files and rebuilds the published panel exactly: it selects 250 cells, the 249 analysed cells plus `-07p500_-034p688`, which Cell 3 drops because its GWETTOP s.d. is below 0.01 (it is saturated at 1.0 in every month).
 
 | Column | Source |
 |---|---|

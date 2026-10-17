@@ -1,6 +1,7 @@
 # notebooks/
 
-`ssw_global_pipeline.ipynb` is the full analysis. Run it from the repository root (Colab or local Jupyter).
+- **`ssw_global_pipeline.ipynb`** is the clean, runnable pipeline. Run it from the repository root (Colab or local Jupyter).
+- **`archive/ssw_global_pipeline_as_run.ipynb`** is the Colab notebook exactly as it was executed for the paper, outputs included. It has diagnostic cells, Colab restore and download cells, and the fix cells added during the run. Keep it as the provenance record; don't rerun it top to bottom.
 
 | Cell | Stage | Output in `data/` |
 |---|---|---|
@@ -18,12 +19,19 @@
 | 9 | figures, via `scripts/make_figures.py` | `figures/` |
 | 10 | headline numbers | — |
 
-Cells marked `PATCH` in the code (Cell 3 degenerate-cell drop, Cell 4 KSG jitter and 5-nat cap) carry out the procedures described in paper Sections 2.2 and 2.4. The original code for these two steps was not kept, so they were rewritten from the paper's description and checked against the archived results:
+**Two steps were added during the original run** and are carried into the clean notebook verbatim from the archived copy:
 
-- **Panel (Cells 1 and 3):** the 249 published cells are reproduced exactly from `data/gpc_*.csv`.
-- **Linear ceiling (Cell 4):** reproduced exactly; spot-checked at 6 cells to 4 decimal places.
-- **KSG mutual information (Cell 4):** reproduced to within 0.001 in humid cells and within 0.02 in hyper-arid cells. The jitter's random draws differ from the original run, and in hyper-arid cells most values are tied at the 0.04 floor, so those cells are the most sensitive to it.
-- **Everything downstream (Stage C, Stage D, the exceedance diagnostic):** every number in the paper reproduces exactly from the archived result tables.
+- **Cell 3:** drop cells with GWETTOP s.d. below 0.01. This removes one cell, 7.5S 34.7W, which is saturated at 1.0 in all 504 months.
+- **Cell 4:** KSG mutual information with 1e-8 s.d. tie-breaking jitter and a 5-nat cap. It uses one generator seeded 0, drawn for each cell in turn (raw series, then deseasonalised).
+
+**Verified reproduction** against the archived result tables:
+
+| Step | Result |
+|---|---|
+| Panel (Cells 1 + 3, from `data/gpc_*.csv`) | the 249 published cells, exactly |
+| Stage B linear ceilings, all 249 cells | max abs. difference 9e-16 |
+| Stage B KSG MI, all 249 cells | max abs. difference 0 |
+| Stage C, Stage D, exceedance | every number in the paper recomputed exactly from the archived tables |
 
 **Two averaging bases in Stage D.** Cell 10 reports `lag_only` and `lag+drivers` two ways:
 

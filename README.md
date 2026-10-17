@@ -47,6 +47,7 @@ scripts/
   check_references.py  resolves every cited DOI against Crossref / DataCite
 notebooks/
   ssw_global_pipeline.ipynb  full pipeline: GEE panel -> POWER pull -> Stages A-D (see notebooks/README.md)
+  archive/                   the Colab notebook exactly as run for the paper, with outputs
 data/                  pipeline outputs, not version-controlled (see data/README.md)
 ```
 
@@ -63,7 +64,7 @@ python scripts/make_figures.py --data data --out figures
 
 No Earth Engine account is needed: the covariate export is in `data/`. You need network access to `power.larc.nasa.gov` for the POWER pull. No GPU is needed and 8 GB RAM is enough. Every heavy stage saves a checkpoint per grid cell and picks up where it left off after a restart.
 
-The pipeline was run twice from raw inputs on separate compute environments and gave the same reported numbers both times. See `notebooks/README.md` for which steps reproduce exactly and which reproduce to within a stated tolerance.
+The pipeline was run twice from raw inputs on separate compute environments and gave the same reported numbers both times. `notebooks/README.md` records which steps were re-verified against the archived result tables, and how closely each matched.
 
 ## Data sources
 
